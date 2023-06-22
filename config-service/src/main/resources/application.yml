@@ -1,0 +1,16 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-service
+  cloud:
+    config:
+      server:
+        git:
+          url: file:////Users//Administrator//git-local-repo
+# file:///${user.home}/git-local-repo
+# file:\\\C:Users\Administrator\git-local-repo
+# file:\\\C:Users\\Administrator\\git-local-repo
+# file:///C:\\Users\\Administrator\\git-local-repo
+# file:\\\${user.home}//git-local-repo
