@@ -4,13 +4,23 @@ server:
 spring:
   application:
     name: config-service
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: admin
+    password: cgs2760
+  profiles:
+    active: symmetricKey
   cloud:
-    config:
+   config:
       server:
         git:
-          url: file:////Users//Administrator//git-local-repo
-# file:///${user.home}/git-local-repo
-# file:\\\C:Users\Administrator\git-local-repo
-# file:\\\C:Users\\Administrator\\git-local-repo
-# file:///C:\\Users\\Administrator\\git-local-repo
-# file:\\\${user.home}//git-local-repo
+          uri: https://github.com/ChaeJongMin/spring-cloud-config
+#        native:
+#          search-locations: file:///${user.home}/native-file-repos
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, busrefresh

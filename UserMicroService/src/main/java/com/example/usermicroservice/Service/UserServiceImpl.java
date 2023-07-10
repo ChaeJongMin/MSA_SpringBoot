@@ -1,8 +1,10 @@
 package com.example.usermicroservice.Service;
 
+import com.example.usermicroservice.client.OrderServiceClient;
 import com.example.usermicroservice.domain.UserEntity;
 import com.example.usermicroservice.domain.UserRepository;
 import com.example.usermicroservice.dto.UserDto;
+import com.example.usermicroservice.error.FeignErrorHandler;
 import com.example.usermicroservice.vo.ResponseOrderVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,11 +12,18 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +37,10 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final Environment environment;
+    private final OrderServiceClient orderServiceClient;
+    private final CircuitBreakerFactory circuitBreakerFactory;
+
     @Override
     public UserDto createUser(UserDto userDto) {
         int userIdLen = (int) (Math.random() * 5) + 6;
@@ -56,8 +69,15 @@ public class UserServiceImpl implements UserService {
         } catch (NoSuchElementException e) {
             throw new UsernameNotFoundException("해당 유저는 존재하지 않습니다.");
         }
-        List<ResponseOrderVo> orderList=new ArrayList<>();
+
+        log.info("Before call orders microservice");
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+        List<ResponseOrderVo> orderList = circuitBreaker.run(() -> orderServiceClient.getOrders(userId),
+                throwable -> new ArrayList<>()
+        );
+        log.info("After called orders microservice");
         userDto.setOrderList(orderList);
+
         return userDto;
     }
 

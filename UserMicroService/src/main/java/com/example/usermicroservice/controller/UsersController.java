@@ -4,13 +4,15 @@ import com.example.usermicroservice.Service.UserService;
 import com.example.usermicroservice.dto.UserDto;
 import com.example.usermicroservice.vo.RequestUserVO;
 import com.example.usermicroservice.vo.ResponseUserVo;
+
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/")
 @RequiredArgsConstructor
+@Slf4j
 public class UsersController {
 
     private final Environment environment;
@@ -26,6 +29,7 @@ public class UsersController {
     private final Environment env;
 
     @GetMapping("/health_check")
+    @Timed(value = "users.status", longTask = true)
     public String status() {
         return String.format("It's Working in User Service"
                 + ", port(local.server.port)=" + env.getProperty("local.server.port")
@@ -35,6 +39,7 @@ public class UsersController {
     }
 
     @GetMapping("/welcome")
+    @Timed(value = "users.walcome", longTask = true)
     public String welcome(){
         return environment.getProperty("greeting.message");
     }
@@ -64,10 +69,11 @@ public class UsersController {
     @GetMapping("/users/{userId}")
     public ResponseEntity<ResponseUserVo> getUser(@PathVariable ("userId") String userId){
         UserDto userDto = userService.getUserByUserId(userId);
-
+        log.info("받아온 주문 리스트 크기: "+userDto.getOrderList().size());
         ResponseUserVo responseUserVo=new ModelMapper().map(userDto,ResponseUserVo.class);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseUserVo);
     }
+
 
 }

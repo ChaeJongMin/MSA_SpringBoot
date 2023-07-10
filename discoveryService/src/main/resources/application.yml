@@ -4,7 +4,13 @@ server:
 spring:
   application:
     name: discoveryService
-
+  cloud:
+    config:
+      name: user-service
+    compatibility-verifier:
+      enabled: false
+  config:
+    import: "optional:configserver:http://localhost:8888/"
 eureka:
   client:
     register-with-eureka: false

@@ -3,6 +3,7 @@ package com.example.usermicroservice.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 public class ResponseOrderVo {
@@ -10,7 +11,7 @@ public class ResponseOrderVo {
     private Integer qty;
     private Integer unitPrice;
     private Integer totalPrice;
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
     private String orderId;
 }

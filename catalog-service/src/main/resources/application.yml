@@ -12,7 +12,7 @@ spring:
       path: /h2-console
   datasource:
     driver-class-name: org.h2.Driver
-    url : jdbc:h2:~/ecommerce
+    url : jdbc:h2:~/ecommerce;AUTO_SERVER=TRUE
     username: admin
     password: 123
   jpa:
@@ -32,7 +32,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone : http://127.0.0.1:8761/eureka
+      defaultZone : http://discovery-service:8761/eureka
 
 logging:
   level:

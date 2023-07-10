@@ -37,7 +37,7 @@ public class WebSecurity{
                .authorizeRequests(authorize -> authorize
                                .requestMatchers(PathRequest.toH2Console()).permitAll()
                                .requestMatchers("/actuator/**").permitAll()
-                               .requestMatchers("/**").access("hasIpAddress('127.0.0.1') or hasIpAddress('192.168.0.21')")
+                               .requestMatchers("/**").access("hasIpAddress('127.0.0.1') or hasIpAddress('192.168.0.21') or hasIpAddress('172.18.0.0/16')")
                       )
                .addFilter(getAuthenticationFilter());
 

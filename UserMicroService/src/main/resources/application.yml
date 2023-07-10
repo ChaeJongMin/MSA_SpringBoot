@@ -7,33 +7,38 @@ server:
 spring:
   application:
     name: user-service
-  profiles:
-    active: dev
+#  zipkin:
+#    base-url: http://127.0.0.1:9411/
+#    enabled: true
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: admin
+    password: cgs2760
+#  profiles:
+#    active: dev
+  config:
+    import: optional:configserver:http://localhost:8888
   cloud:
     config:
-      name: ecommerce
-  config:
-    import: "optional:configserver:http://localhost:8888/"
+      name: customer-service
   h2:
     console:
       enabled: true
       settings:
         web-allow-others: true
       path: /h2-console
-  datasource:
-    driver-class-name: org.h2.Driver
-    url : jdbc:h2:tcp://localhost/~/ecommerce
-    username: admin
-    password: 123
-
+#  datasource:
+#    driver-class-name: org.h2.Driver
+#    url : jdbc:h2:/~/ecommerce
+#    username: admin
+#    password: 123
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: false
     generate-ddl: true
     database-platform: org.hibernate.dialect.H2Dialect
-
-
 eureka:
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance-id:${random.value}}
@@ -42,11 +47,19 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone : http://localhost:8761/eureka
-#token:
-#  expiration_time: 86400000
 management:
   endpoints:
     web:
       exposure:
-        include: refresh, health, beans
-#  secret: "236979CB6F1AD6B6A6184A8CC36871E26235DD67DCFE404149231E6BE37DB3818CC36871E26235DD67DCFE4041492"
+        include: refresh, health, beans, busrefresh, info, metrics, prometheus
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411
+logging:
+  level:
+    com.example.usermicroservice.client: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

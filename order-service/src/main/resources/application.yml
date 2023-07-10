@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: order-service
+
+
+  cloud:
+    compatibility-verifier:
+      enabled: false
   h2:
     console:
       enabled: true
@@ -11,16 +16,15 @@ spring:
         web-allow-others: true
       path: /h2-console
   datasource:
-    driver-class-name: org.h2.Driver
-    url : jdbc:h2:tcp://localhost/~/ecommerce
-    username: admin
-    password: 123
+    driver-class-name: org.mariadb.jdbc.Driver
+    url : jdbc:mariadb://mariadb:3306/ecommerce
+    username: root
+    password: cgs2760
   jpa:
     hibernate:
-      ddl-auto: none
-#    show-sql: true
-    generate-ddl: true
-    database-platform: org.hibernate.dialect.H2Dialect
+      ddl-auto: update
+      generate-ddl: true
+      database-platform: org.hibernate.dialect.MariaDB103Dialect
 
 eureka:
   instance:
@@ -29,8 +33,22 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone : http://127.0.0.1:8761/eureka
+      defaultZone : http://discovery-service:8761/eureka
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411
 
 logging:
   level:
     com.example.orderservice: DEBUG
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, httptrace, busrefresh, info, metrics, prometheus
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
