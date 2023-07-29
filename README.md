@@ -3,7 +3,7 @@
 
 ## MSA에 대한 배워보기 위해 간단한 프로젝트를 수행 학습해봤습니다.
 
-## Kafka, Zookeeper, Docker, Zipkin 등 파일커서 따로 추가하지 않았습니다.
+### Kafka, Zookeeper, Docker, Zipkin 등 따로 크게 수정한 내용이 없어 올리진 앟았습니다.
 
 ### 각 기능
 1. Order, Catalog, User Services 구현
